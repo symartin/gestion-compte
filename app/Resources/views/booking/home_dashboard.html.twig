@@ -39,18 +39,12 @@
             ></canvas>
         </div>
         {% endif %}
-        {% if  member.timeCount < 0 %}
-            <p><i class="material-icons">warning</i> Tu as du retard sur ton bénévolat. Pense à réserver tes créneaux.
-            </p>
-        {% else %}
+        {% if  member.timeCount >= 0 %}
             {% set remaining = shift_service.remainingToBook(member) %}
-            {% if  remaining > 0 %}
-                <p><i class="material-icons">warning</i> Pense à réserver tes créneaux. <br>Tu as
-                    encore {{ remaining | duration_from_minutes }} à réserver.</p>
-            {% else %}
+            {% if  remaining <= 0 %}
                 {% set duration_to_book = (shift_service.shiftTimeByCycle(member) - member.timeCount(member.endOfCycle)) %}
-                <p>Bravo
-                    ! {% if member.beneficiaries | length %}Vos{% else %}Tes{% endif %} {{ due_duration_by_cycle | duration_from_minutes }}
+                <p><i class="material-icons">stars</i> Bravo !
+                {% if member.beneficiaries | length > 1 %}Vos{% else %}Tes{% endif %} {{ due_duration_by_cycle | duration_from_minutes }} de créneaux
                     ont été planifiées sur le cycle actuel.</p>
                 {% if beneficiariesWhoCanBook | length > 0 and duration_to_book > 0 and not allow_extra_shifts %}
                     <p>
@@ -70,11 +64,6 @@
                         {% endif %}
                         encore effectuer des créneaux.
                     </p>
-                {% else %}
-                    <p><i class="material-icons">stars</i> Bravo !
-                        Tous {% if member.beneficiaries | length %}vos{% else %}tes{% endif %} créneaux ont été
-                        planifiés
-                        sur le cycle actuel !</p>
                 {% endif %}
             {% endif %}
         {% endif %}
@@ -89,7 +78,5 @@
        {% if beneficiariesWhoCanBook | length == 0 %}disabled{% endif %}>
         Réserver
     </a>
-
-    <p>Mon cycle actuel se termine le {{ member.endOfCycle | date_fr_long }}</p>
 
 {% endif %}

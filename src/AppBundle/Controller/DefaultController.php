@@ -127,11 +127,16 @@ class DefaultController extends Controller
             ->getResult();
 
         $dynamicContent = $em->getRepository('AppBundle:DynamicContent')->findOneByCode("HOME")->getContent();
+        $commissions = $em->getRepository('AppBundle:Commission')->createQueryBuilder('c')
+                                                                 ->where('c.next_meeting_date IS NOT NULL')
+                                                                 ->getQuery()
+                                                                 ->execute();
 
         return $this->render('default/index.html.twig', [
             'base_dir' => realpath($this->getParameter('kernel.project_dir')) . DIRECTORY_SEPARATOR,
             'events' => $futur_events,
-            'dynamicContent' => $dynamicContent
+            'dynamicContent' => $dynamicContent,
+            'commissions' => $commissions
         ]);
     }
 

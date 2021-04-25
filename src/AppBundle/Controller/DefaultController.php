@@ -94,12 +94,16 @@ class DefaultController extends Controller
 
                 if ($this->get('membership_service')->canRegister($membership)) {
                     if ($membership->getRegistrations()->count() <= 0) {
-                        $session->getFlashBag()->add('warning', 'Pour poursuivre entre ton adhésion en ligne !');
+                        $session->getFlashBag()->add('warning', 'Pour poursuivre entre ton adhésion en ligne !
+                            &nbsp;&nbsp;&nbsp;&nbsp;<a href="' . $this->get('router')->generate("user_self_register") . '" class="waves-effect waves-light light-green btn"><i
+                                                                       class="material-icons left">card_membership</i>J\'adhère en ligne</a>');
                     }else{
                         $remainder = $this->get('membership_service')->getRemainder($membership);
                         $remainingDays = intval($remainder->format("%R%a"));
                         if ($remainingDays < 0)
-                            $session->getFlashBag()->add('error', 'Oups, ton adhésion  a expiré il y a ' . $remainder->format('%a jours') . '... n\'oublie pas de ré-adhérer !');
+                            $session->getFlashBag()->add('error', 'Oups, ton adhésion  a expiré il y a ' . $remainder->format('%a jours') . '... n\'oublie pas de ré-adhérer !
+                            &nbsp;&nbsp;&nbsp;&nbsp;<a href="' . $this->get('router')->generate("user_self_register") . '" class="waves-effect waves-light light-green btn"><i
+                                                                       class="material-icons left">card_membership</i>Je ré-adhère en ligne</a>');
                         else {
                             $session->getFlashBag()->add('warning',
                                 'Ton adhésion expire dans ' . $remainingDays . ' jours.<br>' .
@@ -128,15 +132,30 @@ class DefaultController extends Controller
 
         $dynamicContent = $em->getRepository('AppBundle:DynamicContent')->findOneByCode("HOME")->getContent();
         $commissions = $em->getRepository('AppBundle:Commission')->createQueryBuilder('c')
-                                                                 ->where('c.next_meeting_date IS NOT NULL')
+                                                                 ->where('c.type = :type')
+                                                                 ->setParameter('type','commission')
                                                                  ->getQuery()
                                                                  ->execute();
+        $ca = $em->getRepository('AppBundle:Commission')->createQueryBuilder('c')
+                                                                 ->where('c.type = :type')
+                                                                 ->setParameter('type','ca')
+                                                                 ->getQuery()
+                                                                 ->execute();
+        $caByCollege = array();
+        foreach ($ca as $i) {
+            $college = $i->getCollege();
+            if (!isset($caByCollege[$college])) {
+                $caByCollege[$college] = array();
+            }
+            $caByCollege[$college][] = $i;
+        }
 
         return $this->render('default/index.html.twig', [
             'base_dir' => realpath($this->getParameter('kernel.project_dir')) . DIRECTORY_SEPARATOR,
             'events' => $futur_events,
             'dynamicContent' => $dynamicContent,
-            'commissions' => $commissions
+            'commissions' => $commissions,
+            'caByCollege' => $caByCollege,
         ]);
     }
 

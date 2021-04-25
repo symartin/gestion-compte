@@ -1,106 +1,60 @@
 {% if  app.user.beneficiary %}
     {% set beneficiary = app.user.beneficiary %}
     {% set member = beneficiary.membership %}
-    {% if  member.timeCount < 0 %}
-        <div class="alert card red lighten-4 red-text text-darken-4">
-            <div class="card-content">
-                </p>Tu as du retard sur ton bénévolat ({{member.timeCount | duration_from_minutes}}). Pense à réserver tes créneaux !</p>
-            </div>
+    {% set beneficiariesWhoCanBook = shift_service.beneficiariesWhoCanBook(member) %}
+    <div style="padding-top:10px;padding-bottom:10px">
+        <a href="{{ path("booking") }}" class="btn teal darken-1" {% if beneficiariesWhoCanBook | length == 0 %}disabled{% endif %}>Réserver</a>
+        <a href="{{ path("schedule") }}" class="btn teal darken-1">Planning</a><br>
+        {{ render(controller("AppBundle:Code:homepageDashboard")) }}
+    </div>
+    {% if (member.reservedShifts | length) > 0 %}
+        <div id="pending" class="col s12">
+            {% for shift in member.reservedShifts %}
+                {% include "booking/_partial/reserved_shift.html.twig" with { shift: shift  } %}
+            {% endfor %}
         </div>
     {% endif %}
-    <ul class="collapsible expandable">
-        {% if (member.reservedShifts | length) > 0 %}
-            <li class="active">
-                <div class="collapsible-header active"><i class="material-icons">event_note</i>Mes créneaux à accepter</div>
-                <div class="collapsible-body">
-                    {% for shift in member.reservedShifts %}
-                        {% include "booking/_partial/reserved_shift.html.twig" with { shift: shift  } %}
-                    {% endfor %}
-                </div>
-            </li>
-        {% endif %}
-        {% for cycle in 0..1 %}
+    <div class="scrollshift" id="scrollwindow" style="overflow-y:scroll;height:380px;text-align:left;">
+        {% for cycle in 1..-2 %}
             {% set shiftsOfCycle = member.getShiftsOfCycle(cycle) %}
-            {% if cycle == 0 or shiftsOfCycle | length > 0 %}
-                <li class="active">
-                    <div class="collapsible-header active"><i class="material-icons">date_range</i>Mes créneaux pour le cycle {% if cycle == 0 %}courant{% else %}suivant{% endif %}  (du {{ member.startOfCycle(cycle) | date_fr_long }} au {{ member.endOfCycle(cycle) | date_fr_long }})  <span class="new badge red" data-badge-caption="" title="Nombre d'heures effectuées sur le créneau">{{member.getCycleShiftsDuration(cycle) | duration_from_minutes}}</span></div>
-                    <div class="collapsible-body">
-                        <div class="row">
-                            {% set remaining = due_duration_by_cycle - member.getCycleShiftsDuration(cycle) %}
-                            {% for shift in shiftsOfCycle %}
-                                <div class="col s12 m6 {% if shiftsOfCycle | length == 1 and remaining <= 0 %}push-m3 push-xl3{% endif %} l12 xl6">
-                                    {% include "booking/_partial/home_shift.html.twig" with { shift: shift  } %}
-                                </div>
-                            {% endfor %}
-                            {% if cycle == 0 and shiftsOfCycle | length == 0 %}
-                                <div class="col s12 m6 push-m3 l12 xl6 push-xl3">
-                                <div class="card blue white-text">
-                                    <div class="card-content">
-                                        <i class="material-icons">warning</i>
-                                        <p>Aucun créneau réservé sur le cycle actuel. Pense à réserver tes créneaux !</p>
-                                    </div>
-                                </div>
-                                </div>
-                            {% elseif remaining > 0 %}
-                                <div class="col s12 m6 l12 xl6">
-                                    <div class="card blue white-text">
-                                        <div class="card-content">
-                                            <i class="material-icons">warning</i>
-                                            <p>Pense à réserver tes créneaux, tu as
-                                            encore <b>{{ remaining | duration_from_minutes }} à réserver</b> sur ce cycle !</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            {% endif %}
+            <h6>
+                Cycle du {{ member.startOfCycle(cycle) | date('d/m/y') }} au {{ member.endOfCycle(cycle) | date('d/m/y') }}
+            </h6>
+            <ul class="collection">
+                {% for shift in shiftsOfCycle %}
+                    {% include "booking/_partial/home_shift.html.twig" with { shift: shift  } %}
+                {% endfor %}
+                {% if shiftsOfCycle | length == 0 %}
+                    <li class="collection-item valign-wrapper">
+                        <div>
+                            <p>Aucun créneau {% if cycle < 0 %}effectué{% else %}réservé{% endif %} sur le cycle actuel. Pense à réserver tes créneaux !</p>
                         </div>
-                    </div>
-                </li>
-            {% endif %}
+                    </li>
+                {% endif %}
+            </ul>
         {% endfor %}
-        {% if (member.getFutureRebookedShifts() | length) != 0 %}
-            <li class="active">
-                <div class="collapsible-header active"><i class="material-icons">event_busy</i>Mes créneaux annulés et repris par un autre bénévole</div>
-                <div class="collapsible-body">
-                    {% for bookedshift in member.getFutureRebookedShifts() %}
-                        <div class="col m6 s12 {% if (member.getFutureRebookedShifts() | length) < 2 %}push-m3{% endif %}">
-                            <div class="card green lighten-5">
-                                <div class="card-content green-text">
-                                    <span class="card-title">{{ bookedshift.start|date_fr_long }}</span>
-                                    <p>De {{ bookedshift.start|date('H:i') }} à {{ bookedshift.end|date('H:i') }}</p>
-                                    <p>Créneau repris</p>
-                                </div>
+    </div>
+    <div id="scrollarrow" class="scrollarrow">
+        <p class="center"><i>Faire défiler vers le bas pour voir la suite</i></p>
+        <div class="arrow"></div>
+    </div>
+    {% if (member.getFutureRebookedShifts() | length) != 0 %}
+        <li class="active">
+            <div class="collapsible-header active"><i class="material-icons">event_busy</i>Mes créneaux annulés et repris par un autre bénévole</div>
+            <div class="collapsible-body">
+                {% for bookedshift in member.getFutureRebookedShifts() %}
+                    <div class="col m6 s12 {% if (member.getFutureRebookedShifts() | length) < 2 %}push-m3{% endif %}">
+                        <div class="card green lighten-5">
+                            <div class="card-content green-text">
+                                <span class="card-title">{{ bookedshift.start|date_fr_long }}</span>
+                                <p>De {{ bookedshift.start|date('H:i') }} à {{ bookedshift.end|date('H:i') }}</p>
+                                <p>Créneau repris</p>
                             </div>
                         </div>
-                    {% endfor %}
-                </div>
-            </li>
-        {% endif %}
-        {% if (shift_service.hasCycle(member, -1) or shift_service.hasCycle(member, -2)) %}
-            <li >
-                <div class="collapsible-header"><i class="material-icons">event_available</i>Mes créneaux passés</div>
-                <div class="collapsible-body">
-                    {# Shift history #}
-                    <div class="row">
-                        {% for cycle in -1..-2 %}
-                            {% if shift_service.hasCycle(member, cycle) %}
-                                <div class="col m6 s12">
-                                    {% set previousShifts = member.getShiftsOfCycle(cycle) %}
-                                    <h6>Cycle précédent (du {{ member.startOfCycle(cycle) | date('d/m/y') }} au {{ member.endOfCycle(cycle) | date('d/m/y') }})</h6>
-                                    {% if previousShifts|length == 0 %}
-                                        Pas de créneau
-                                    {% endif %}
-                                    {% for shift in previousShifts %}
-                                        <div class="col m12 s12">
-                                            {% include "user/_partial/mini_shift.html.twig" with { shift: shift  } %}
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                        {% endfor %}
                     </div>
-                </div>
-            </li>
-        {% endif %}
-    </ul>
+                {% endfor %}
+            </div>
+        </li>
+    {% endif %}
 {% endif %}
 

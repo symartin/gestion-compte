@@ -12,7 +12,6 @@
 {% block content %}
     {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
         <div class="center">
-        <div class="announcement">{{ dynamicContent | markdown | raw }}</div>
         <div class="row">
             <div class="col s12">
                 <h3 class="header">
@@ -28,79 +27,63 @@
             {% endif %}
             {% if app.user.beneficiary %}
                 <div class="col s12">
-                    <p>Bienvenue sur ton espace personnel à {{ project_name }}</p>
-                    {% if app.user.beneficiary.membership | uptodate and app.user.beneficiary.membership | can_register %}
-                        <a href="{{ path("user_self_register") }}" class="waves-effect waves-light light-green btn"><i
-                                                                   class="material-icons left">card_membership</i>Je ré-adhère en ligne</a>
-                        <br>
-                        <br>
-                    {% endif %}
+                    <p>Bienvenue sur ton espace personnel à {{ project_name }}.
+                        {% if app.user.beneficiary.membership | can_register and app.user.beneficiary.membership.registrations | length %}
+                            <br>
+                            <br>
+                            {% if not app.user.beneficiary.membership | uptodate %}
+                                Ton adhésion a expiré le {{ "now"|date_modify((app.user.beneficiary.membership | remainder | date("%R%a"))~" days")| date_fr_long }}.<br>
+                            {% endif %}
+                            <a href="{{ path("user_self_register") }}" class="waves-effect waves-light light-green btn"><i
+                                                                       class="material-icons left">card_membership</i>Je ré-adhère en ligne</a>
+                            <br>
+                            <br>
+                        {% elseif not app.user.beneficiary.membership.registrations | length %}
+                            <br>
+                            <br>
+                            Il est temps d'adhérer.<br>
+                            <a href="{{ path("user_self_register") }}" class="waves-effect waves-light light-green btn">
+                                <i class="material-icons left">card_membership</i>J'adhère en ligne
+                            </a>
+                            <br>
+                            <br>
+                        {% endif %}
+                    </p>
                 </div>
             {% endif %}
         </div>
 
+        <div class="announcement">{{ dynamicContent | markdown | raw }}</div>
+
         {% if app.user.beneficiary %}{# not only admin ? #}
             <div class="row">
                 {% if app.user.beneficiary.membership | uptodate %}
-                    <div class="col s12">
+                    <div class="col s12 xl6">
                         <div class="homebox">
-                            <h5><span class="white">Mon Bénévolat</span></h5>
-                            <div class="row" style="display: flex; flex-wrap: wrap; align-items:center;">
-                                <div class="col s12 m12 l6 xl4">
-                                    {{ render(controller("AppBundle:Booking:homepageDashboard")) }}
-                                    {{ render(controller("AppBundle:Code:homepageDashboard")) }}
-                                </div>
-                                <div class="col s12 m12 l6 xl8">
-                                    {{ render(controller("AppBundle:Booking:homepageShifts1")) }}
-                                </div>
-                            </div>
+                            <h5><span class="white">Mon Compte</span></h5>
+                                {{ render(controller("AppBundle:Booking:homepageDashboard")) }}
+                                <a href="{{ path("fos_user_profile_show") }}" class="waves-effect waves-light blue-grey btn">
+                                    <i class="material-icons left">settings</i>
+                                    Gérer mon compte
+                                </a>
+                                {% if(display_freeze_account) %}
+                                    <br>{% include "member/_partial/frozen.html.twig" with { member: app.user.beneficiary.membership  } %}
+                                {% endif %}
+                                {% if(display_swipe_cards_settings) %}
+                                    <br>{% include "member/_partial/swipe_card.html.twig" with { member: app.user.beneficiary.membership, showBadgeImage: false } %}
+                                {% endif %}
                         </div>
                     </div>
-                {% else %}
-                    <div class="col show-on-xl-only xl3">
+                    <div class="col s12 xl6">
+                        <div class="homebox">
+                            <h5><span class="white">Mes Créneaux</span></h5>
+                            {{ render(controller("AppBundle:Booking:homepageShifts1")) }}
+                        </div>
                     </div>
                 {% endif %}
-                <div class="col s12 m6">
-                    <div class="homebox">
-                        <h5><span class="white">Mon compte</span></h5>
-                        <div>
-                            {% if (app.user.beneficiary.membership.registrations | length) and not app.user.beneficiary.membership | uptodate %}
-                                <p>
-                                <i class="material-icons">warning</i>
-                                Ton adhésion a expirée le {{ "now"|date_modify((app.user.beneficiary.membership | remainder | date("%R%a"))~" days")| date_fr_long }}
-                                </p>
-                                <a href="{{ path("user_self_register") }}" class="waves-effect waves-light light-green btn"><i
-                                                                           class="material-icons left">card_membership</i>Je ré-adhère en ligne</a>
-                            {% elseif not app.user.beneficiary.membership | uptodate %}
-                                <p>
-                                <i class="material-icons">warning</i>
-                                Il est temps d'adhérer.
-                                </p>
-                                <a href="{{ path("user_self_register") }}" class="waves-effect waves-light light-green btn"><i
-                                                                           class="material-icons left">card_membership</i>J'adhère en ligne</a>
-                            {% else %}
-                                <div>
-                                    <div>
-                                        {% if(display_swipe_cards_settings) %}
-                                          {% include "member/_partial/swipe_card.html.twig" with { member: app.user.beneficiary.membership, showBadgeImage: false } %}
-                                        {% endif %}
-                                    </div>
-                                    <a href="{{ path("fos_user_profile_show") }}" class="waves-effect waves-light blue-grey btn">
-                                        <i class="material-icons left">settings</i>
-                                        Gérer mon compte
-                                    </a>
-                                    {% if(display_freeze_account) %}
-                                        {% include "member/_partial/frozen.html.twig" with { member: app.user.beneficiary.membership  } %}
-                                    {% endif %}
-                                </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-                <div class="col s12 m6">
+                <div class="col s12 m12 l6 xl4">
                     <div class="homebox">
                         <h5><span class="white">En ce moment à {{ project_name }}</span></h5>
-                        <a href="{{ path("schedule") }}" class="waves-effect waves-light btn teal darken-1"><i class="material-icons left">schedule</i>Planning</a><br><br>
                         <a href="{{ path("process_update_list") }}" class="btn blue-grey" id="news_home_button" style="position: relative">
                             <i class="material-icons left" >info</i>Les nouveautés
                             <span class="bubble_counter red white-text" style="display:none;">{{ app.user.beneficiary | last_shift_date | count_updates_list_from_date}}</span>
@@ -135,6 +118,32 @@
                 </div>
                 <div class="col s12">
                     <div class="homebox">
+                        <h5><span class="white">Les Conseil d'administration</span></h5>
+                        {% for college, instances in caByCollege %}
+                            <h6><span class="white">Collèges {{ college }}</span></h6>
+                            <div class="row" style="display: flex;flex-wrap: wrap;">
+                                {% for instance in instances %}
+                                    <div class="col s12 m6">
+                                        <div class="card">
+                                            <div class="card-content left-align">
+                                                <span class="card-title">
+                                                    {{ instance.name }}
+                                                </span>
+                                                <p class="valign-wrapper">
+                                                    {% for member in instance.getBeneficiaries %}
+                                                        {{ member }}, 
+                                                    {% endfor %}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="col s12">
+                    <div class="homebox">
                         <h5><span class="white">Les Commissions</span></h5>
                         Si tu veux en savoir plus sur les commissions, tu trouveras toutes les informations utiles ci-dessous !
                         <div class="row" style="display: flex;flex-wrap: wrap;">
@@ -149,8 +158,8 @@
                                                     <a href="mailto:{{ commission.email | email_encode | raw }}"><i class="material-icons">email</i></a>
                                                 </div>
                                             </span>
-                                            <p class="valign-wrapper"><i class="material-icons">date_range</i>&nbsp;<span>{{ commission.getNextMeetingDate|date('d/m/y à H:i') }}</span></p>
-                                            <p class="valign-wrapper"><i class="material-icons">people</i>&nbsp;<span>{{ commission.getBeneficiaries|length }} membres</span></p>
+                                            <p class="valign-wrapper"><i class="material-icons tiny">date_range</i>&nbsp;<span>{{ commission.getNextMeetingDate|date('d/m/y à H:i') }}</span></p>
+                                            <p class="valign-wrapper"><i class="material-icons tiny">people</i>&nbsp;<span>{{ commission.getBeneficiaries|length }} membres</span></p>
                                         </div>
                                     </div>
                                 </div>
@@ -217,6 +226,46 @@
         {% if not is_granted("IS_AUTHENTICATED_REMEMBERED") %}
         var barcode_submit_url = "{{ path('check') }}";
         {% endif %}
+    </script>
+    <script type="text/javascript">
+        jQuery(function($) {
+            $.fn.hasScrollBar = function() {
+                return this.get(0).scrollHeight > this.innerHeight();
+            }
+        });
+        $(document).ready(function(){
+        $('.carousel.carousel-slider').carousel({
+            fullWidth: true,
+                    shift: 10,
+        });
+    });
+
+        $(document).ready(function(){
+            if (!$('#scrollwindow').hasScrollBar()) {
+                $('#scrollarrow').hide();
+            }
+        });
+        $('#scrollwindow').scroll(function(){
+            if ($(this).scrollTop() < 20) {
+                $('#scrollarrow').show();
+            }else{
+                $('#scrollarrow').hide();
+            }
+        });
+
+        // move next carousel
+        $('.moveNextCarousel').click(function(e){
+            e.preventDefault();
+            e.stopPropagation();
+            $('.carousel').carousel('next');
+        });
+
+        // move prev carousel
+        $('.movePrevCarousel').click(function(e){
+            e.preventDefault();
+            e.stopPropagation();
+            $('.carousel').carousel('prev');
+        });
     </script>
     {% if not is_granted("IS_AUTHENTICATED_REMEMBERED") %}
         <script src="{{ asset('bundles/app/js/barcode.js') }}"></script>

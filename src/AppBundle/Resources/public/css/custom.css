@@ -481,3 +481,85 @@ strong {
 .hover-toggle-text-icon a:hover span {
   display: none;
 }
+.middle-indicator{
+  position:absolute;
+  top:50%;
+}
+.middle-indicator-text{
+  font-size: 4.2rem;
+}
+.left-indicator{
+    margin-left: -20px
+}
+.right-indicator{
+    margin-right: -20px
+}
+.indicators{
+    visibility: hidden;
+  }
+.carousel {
+  max-height: 220px
+}
+
+.list-divider {
+  border: 0;
+  height: 1px;
+  overflow: hidden;
+  background-color: #e0e0e0;
+  margin-right: 200px;
+  margin-left: 0px;
+}
+
+.arrow,
+.arrow:before {
+  position: relative;
+  left: 50%;
+  top: -3px
+}
+
+.scrollarrow p {
+ margin-top: 10px;
+ margin-bottom: 0;
+}
+
+.arrow {
+  width: 15px;
+  height: 15px;
+  -webkit-transform: rotate(45deg);
+  border-left: none;
+  border-top: none;
+  border-right: 2px #000 solid;
+  border-bottom: 2px #000 solid;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+  animation-name: arrow;
+}
+
+@keyframes arrow {
+  0% {
+    opacity: 1;
+    }
+  70% {
+    opacity: 0;
+}
+}
+
+.list {
+    padding-left: 1em;
+    padding-right: 1em;
+}
+
+.titleshift {
+    padding-bottom: 8px
+}
+.ml-auto {
+  margin-left: auto;
+}
+.scrollshift {
+ padding-left:24px;
+ padding-right:24px;
+}
+.scrollshift p {
+ margin:0;
+ color:inherit
+}

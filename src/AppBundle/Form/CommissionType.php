@@ -8,9 +8,11 @@ use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -44,11 +46,22 @@ class CommissionType extends AbstractType
         }
         if ($user->hasRole('ROLE_ADMIN')||$user->hasRole('ROLE_SUPER_ADMIN')) {
             $builder
-                ->add('name', TextType::class, array('constraints' => array(new NotBlank()), 'label' => 'Nom'));
+                ->add('name', TextType::class, array('constraints' => array(new NotBlank()), 'label' => 'Nom'))
+                ->add('type', ChoiceType::class, array('label'=>'Type d\'instance', 'required' => false, 'choices' => array(
+                    "Commission" => "commission",
+                    "Groupe de travail" => "gt",
+                    "Mission" => "mission",
+                    "Conseil d'administration" => "ca",
+                )))
+                ->add('college', ChoiceType::class, array('label'=>'College', 'required' => false, 'choices' => array(
+                    "Consultatif" => "consultatif",
+                    "Votant" => "votant",
+                )));
         }
         $builder
             ->add('description',MarkdownEditorType::class,array('label'=>'Description'))
-            ->add('email',EmailType::class,array('constraints' => array( new NotBlank(), new Email()),'label'=>'Courriel'));
+            ->add('email',EmailType::class,array('constraints' => array( new NotBlank(), new Email()),'label'=>'Courriel'))
+            ->add('chat_url', UrlType::class, array('label' => 'URL du chat'));
 
         $builder->add('next_meeting_date',DateTimeType::class,array('required' => false,
             'input'  => 'datetime',

@@ -32,6 +32,22 @@ class Commission
     /**
      * @var string
      *
+     * @ORM\Column(name="type", type="string", length=64)
+     *
+     */
+    protected $type;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="college", type="string", length=64)
+     *
+     */
+    protected $college;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="description", type="text")
      */
     private $description;
@@ -42,6 +58,13 @@ class Commission
      * @ORM\Column(name="email", type="string", length=255)
      */
     private $email;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="chat_url", type="string", length=255)
+     */
+    private $chat_url;
 
     /**
      * @var string
@@ -108,6 +131,54 @@ class Commission
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * Set type
+     *
+     * @param string $type
+     *
+     * @return Commission
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * Get type
+     *
+     * @return string
+     */
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    /**
+     * Set college
+     *
+     * @param string $college
+     *
+     * @return Commission
+     */
+    public function setCollege($college)
+    {
+        $this->college = $college;
+
+        return $this;
+    }
+
+    /**
+     * Get college
+     *
+     * @return string
+     */
+    public function getCollege(): string
+    {
+        return $this->college;
     }
 
     /**
@@ -232,6 +303,30 @@ class Commission
     public function getEmail()
     {
         return $this->email;
+    }
+
+    /**
+     * Set chatUrl
+     *
+     * @param string $chat_url
+     *
+     * @return Commission
+     */
+    public function setChatUrl($chat_url)
+    {
+        $this->chat_url = $chat_url;
+
+        return $this;
+    }
+
+    /**
+     * Get chatUrl
+     *
+     * @return string
+     */
+    public function getChatUrl()
+    {
+        return $this->chat_url;
     }
 
     /**

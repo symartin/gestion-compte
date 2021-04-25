@@ -43,40 +43,29 @@
             {% set remaining = shift_service.remainingToBook(member) %}
             {% if  remaining <= 0 %}
                 {% set duration_to_book = (shift_service.shiftTimeByCycle(member) - member.timeCount(member.endOfCycle)) %}
-                <p><i class="material-icons">stars</i> Bravo !
-                {% if member.beneficiaries | length > 1 %}Vos{% else %}Tes{% endif %} {{ due_duration_by_cycle | duration_from_minutes }} de créneaux
-                    ont été planifiées sur le cycle actuel.</p>
-                {% if beneficiariesWhoCanBook | length > 0 and duration_to_book > 0 and not allow_extra_shifts %}
-                    <p>
+                <p> Bravo !
+                    {% if member.beneficiaries | length > 1 %}Vos{% else %}Tes{% endif %} {{ due_duration_by_cycle | duration_from_minutes }} de créneaux
+                        ont été planifiées sur le cycle actuel.
+                    {% if beneficiariesWhoCanBook | length > 0 and duration_to_book > 0 and not allow_extra_shifts %}
+                        <br>
                         {% if beneficiariesWhoCanBook | length > 1 %}
                             {% for b in beneficiariesWhoCanBook %} {{ b.firstname }} {% if loop.index < loop.length %} et {% endif %}{% endfor %}peuvent
                         {% else %}
                             {{ (beneficiariesWhoCanBook | first).firstname }} peut
                         {% endif %} encore
                         effectuer {{ (shift_service.shiftTimeByCycle(member) - member.timeCount(member.endOfCycle)) | duration_from_minutes }}
-                        .</p>
-                {% elseif (allow_extra_shifts) %}
-                    <p>
-                        {% if member.beneficiaries | length %}
+                    {% elseif (allow_extra_shifts) %}
+                        <br>{% if member.beneficiaries | length > 1 %}
                             Vous pouvez
                         {% else %}
                             Tu peux
                         {% endif %}
                         encore effectuer des créneaux.
-                    </p>
-                {% endif %}
+                        </p>
+                    {% endif %}
+                </p>
             {% endif %}
         {% endif %}
     {% endif %}
-
-    <a href="{{ path("booking") }}" class="btn teal hide-on-small-only"
-       {% if beneficiariesWhoCanBook | length == 0 %}disabled{% endif %}>
-        <i class="material-icons left">schedule</i>
-        Je réserve un créneau
-    </a>
-    <a href="{{ path("booking") }}" class="btn teal hide-on-med-and-up"
-       {% if beneficiariesWhoCanBook | length == 0 %}disabled{% endif %}>
-        Réserver
-    </a>
 
 {% endif %}

@@ -1,5 +1,5 @@
 {% if app.user.beneficiary.getSwipeCards | length %}
-    <a class="waves-effect waves-light btn modal-trigger blue-grey" href="#all_swipecards"><i class="material-icons left">credit_card</i>{% if app.user.beneficiary.getSwipeCards | length > 1 %}Mes badges{% else %}Mon badge{% endif %}</a>
+    <a class="waves-effect waves-light btn modal-trigger blue-grey" href="#all_swipecards"><i class="material-icons left">credit_card</i>{% if app.user.beneficiary.getSwipeCards | length > 1 %}Gérer mes badges{% else %}Gérer mon badge{% endif %}</a>
     <br>
     <div id="all_swipecards" class="modal bottom-sheet">
         <div class="modal-content">

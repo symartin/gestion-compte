@@ -40,6 +40,33 @@
                 {{ form_widget(form.email) }}
             </div>
         </div>
+        <div class="input-field col s12">
+            <div class="errors">
+                {{ form_errors(form.chat_url) }}
+            </div>
+            <div class="input-field">
+                {{ form_label(form.chat_url) }}
+                {{ form_widget(form.chat_url) }}
+            </div>
+        </div>
+        <div class="input-field col s6">
+            <div class="errors">
+                {{ form_errors(form.type) }}
+            </div>
+            <div class="input-field">
+                {{ form_label(form.type) }}
+                {{ form_widget(form.type) }}
+            </div>
+        </div>
+        <div class="input-field col s6">
+            <div class="errors">
+                {{ form_errors(form.college) }}
+            </div>
+            <div class="input-field">
+                {{ form_label(form.college) }}
+                {{ form_widget(form.college) }}
+            </div>
+        </div>
     </div>
     <div class="card-panel teal lighten-5">
         <div class="row">

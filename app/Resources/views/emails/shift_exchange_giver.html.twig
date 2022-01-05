@@ -1,0 +1,9 @@
+Bonjour {{ shift_exchange.giver.firstname | lower | capitalize }},<br/>
+<br/>
+Ta demande de remplacement pour le créneau du {{ shift_exchange.shift.start|date_fr_long }} de {{ shift_exchange.shift.start|date('G\\hi') }} à {{ shift_exchange.shift.end|date('G\\hi') }} ({{ shift_exchange.shift.job.name }}) a bien été envoyée à <b>{{ shift_exchange.receiver.firstname }} {{ shift_exchange.receiver.lastname }}</b>.<br/>
+{{ shift_exchange.receiver.firstname | lower | capitalize }} doit encore valider l'échange pour que celui-ci soit prise en compte.<br/>
+<br/>
+Il n'est pas nécessaire de répondre à ce mail, sauf si tu as des questions.<br/>
+<br/>
+Belle journée à toi.<br/>
+Céleste, la petite fée des créneaux :)

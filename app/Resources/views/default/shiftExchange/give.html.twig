@@ -1,0 +1,58 @@
+{% extends 'layout.html.twig' %}
+
+{% block breadcrumps %}
+    <a href="{{ path('homepage') }}"><i class="material-icons">home</i></a> <i class="material-icons">chevron_right</i>
+    <i class="material-icons">add</i>Echange de créneaux
+{% endblock %}
+
+{% block content %}
+
+    <h5>Officialiser l'échange d'un créneau</h5>
+
+    <h6 style="margin-top: 2em; margin-bottom: 0;">Description du créneau :</h6>
+    <ul style="padding-left: 1em; margin-top: .5rem;">
+        <li style="list-style-type: square !important">Date : {{ shift.start|date_fr_long }} de {{ shift.start|date('G\\hi') }} à {{ shift.end|date('G\\hi') }}</li>
+        <li style="list-style-type: square !important">Type : <span class="{{ shift.job.color }}-text">{{ shift.job.name }}</span></li>
+    </ul>
+
+    {% if search_form is defined %}
+    {{ form_start(search_form) }}
+    <h6 style="margin-top: 2em;">Choisir le remplaçant :</h6>
+    <div class="row">
+        <div class="col s6">
+            <div class="errors">
+                {{ form_errors(search_form.firstname) }}
+            </div>
+            <div class="input-field">
+                {{ form_widget(search_form.firstname) }}
+                {{ form_label(search_form.firstname) }}
+            </div>
+        </div>
+        <div class="col s6">
+            <button type="submit" class="btn-large waves-effect waves-light purple" id="find_beneficiary"><i class="material-icons left">search</i>Chercher ce bénéficiaire</button>
+        </div>
+    </div>
+    {{ form_end(search_form) }}
+    {% endif %}
+
+    {% if confirm_form is defined %}
+    {{ form_start(confirm_form) }}
+    <h6 class="">Donner ma procuration une personne que je connais</h6>
+    <div class="row">
+        <div class="col s6">
+            <div class="errors">
+                {{ form_errors(confirm_form.owner) }}
+            </div>
+            <div class="input-field">
+                {{ form_widget(confirm_form.owner) }}
+                {{ form_label(confirm_form.owner) }}
+            </div>
+        </div>
+        <div class="col s6">
+            <button type="submit" class="btn-large waves-effect waves-light purple" id="find_beneficiary"><i class="material-icons left">check</i>Valider</button>
+        </div>
+    </div>
+    {{ form_end(confirm_form) }}
+    {% endif %}
+
+{% endblock %}

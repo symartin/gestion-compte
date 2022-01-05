@@ -1,0 +1,39 @@
+{% extends 'layout.html.twig' %}
+
+
+{% block title %}
+    Echanges de créneaux
+{% endblock %}
+
+{% block breadcrumps %}
+    <a href="{{ path('homepage') }}"><i class="material-icons">home</i></a> <i class="material-icons">chevron_right</i>
+    <a href="{{ path('admin') }}"><i class="material-icons">tune</i>admin</a> <i class="material-icons">chevron_right</i>
+    <i class="material-icons">list</i>échanges de créneaux
+{% endblock %}
+
+{% block content %}
+    <h4 class="">Liste des échanges de créneaux <small>({{ shift_exchanges | length }})</small></h4>
+
+    <ul class="collapsible popout" data-collapsible="accordion">
+        {% for shift_exchange in shift_exchanges %}
+            <li>
+                <div class="collapsible-header">
+                    <ul>
+                        <li>Créneau : {{ shift_exchange.shift.start|date_fr_long }} de {{ shift_exchange.shift.start|date('G\\hi') }} à {{ shift_exchange.shift.end|date('G\\hi') }} (<b class="{{ shift_exchange.shift.job.color }}-text">{{ shift_exchange.shift.job.name }}</b>)</li>
+                        <li>Demande de : &nbsp;<b>{{ shift_exchange.giver }}</b></li>
+                        <li>A être remplacé par : &nbsp;<b>{{ shift_exchange.receiver }}</b></li>
+                        <li>Statut : {{ shift_exchange.status }}</li>
+                    </ul>
+                </div>
+                <div class="collapsible-body">
+                    {{ form_start(delete_forms[shift_exchange.id]) }}
+                    {{ form_widget(delete_forms[shift_exchange.id]) }}
+                    <div>
+                        <button type="submit" class="btn waves-effect waves-light red">Supprimer</button>
+                    </div>
+                    {{ form_end(delete_forms[shift_exchange.id]) }}
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

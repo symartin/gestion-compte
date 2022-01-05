@@ -54,6 +54,8 @@
             <div class="card-action">
                 {% if not shift.fixe %}
                     <a href="#dismiss{{ shift.id }}" class="modal-trigger btn-flat red white-text">Annuler</a>
+                {% else %}
+                    <a href="#exchange{{ shift.id }}" class="modal-trigger btn-flat red white-text">Echanger</a>
                 {% endif %}
                 {% if (shift.getIsUpcoming()) %}
                     <a href="#contact{{ shift.id }}" class="modal-trigger btn-flat" title="Contacter les bénévoles du créneau"><i class="material-icons">email</i></a>
@@ -74,6 +76,25 @@
                         <button class="modal-action modal-close waves-effect waves-green btn red ">Oui, je me désiste !</button>
                     </div>
                 </form>
+            </div>
+            <div id="exchange{{ shift.id }}" class="modal black-text">
+                <div class="modal-content">
+                    <h5>Echanger ponctuellement mon créneau</h5>
+                    <div class="left-align">
+                        Etapes à suivre pour échanger mon créneau du {{ shift.start|date_fr_long }} de {{ shift.start|date('G\\hi') }} à {{ shift.end|date('G\\hi') }} :
+                        <ul style="padding-left: 1em;">
+                            <li style="list-style-type: square !important">inscrire le créneau sur la bourse d'échange</li>
+                            <li style="list-style-type: square !important">trouver un autre membre me remplacer sur ce créneau</li>
+                            <li style="list-style-type: square !important">se mettre d'accord avec l'autre membre pour le remplacer sur un de ses créneaux</li>
+                            <li style="list-style-type: square !important">remplir ce formulaire pour officialiser l'échange</li>
+                        </ul>
+                        <p>ATTENTION l'échange doit obligatoirement être réciproque : A fait le créneau de B, et B fait en échange un créneau de A. Les membres doivent s'organiser entre eux ; le Bureau des Membres n'intervient à aucun moment dans l'échange.</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat grey-text ">Retour à la raison</a>
+                    <a href="{{ path("shift_exchange_new",{'id': shift.id}) }}" class="modal-action modal-close waves-effect waves-green btn red">J'enregistre mon remplaçant !</a>
+                </div>
             </div>
         {% endif %}
     {% endif %}

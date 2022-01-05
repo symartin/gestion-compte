@@ -233,6 +233,7 @@ class PeriodPosition
         else
             return "Membre";
     }
+
     /**
      * Constructor
      */
